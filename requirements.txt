@@ -1,0 +1,15 @@
+pandas
+numpy
+scikit-learn
+xgboost
+lightgbm
+catboost
+shap
+optuna
+torch
+matplotlib
+seaborn
+pyarrow
+python-calamine
+openpyxl
+jupyter
