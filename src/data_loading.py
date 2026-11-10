@@ -37,6 +37,33 @@ TARGET_SOURCES = ["INDICATED_DAMAGE", "DAMAGE_LEVEL"]
 ID_TEXT = ["INDEX_NR", "REG", "FLT", "BIRD_BAND_NUMBER", "REMARKS", "COMMENTS", "IMAGE",
            "REPORTED_NAME", "REPORTED_TITLE", "PERSON", "SOURCE", "LUPDATE", "TRANSFER",
            "OUT_OF_RANGE_SPECIES"]
+# Columns dropped because another column already carries the same information,
+# or because they are structurally empty or free text.
+# The reasons are written into reports/leakage_audit.csv by audit_table().
+REDUNDANT = {
+    # Most aircraft have 1-2 engines, so these are empty by design (not missing data).
+    # NUM_ENGS already captures how many engines there are.
+    "ENG_3_POS": "structurally empty (96% missing); NUM_ENGS covers it",
+    "ENG_4_POS": "structurally empty (99% missing); NUM_ENGS covers it",
+
+    # Only filled in for en-route strikes; STATE and PHASE_OF_FLIGHT cover the same ground.
+    "ENROUTE_STATE": "98% missing; overlaps STATE and PHASE_OF_FLIGHT",
+
+    # Free-text field, mostly empty.
+    "LOCATION": "free text, 87% missing",
+
+    # Name/ID pairs: keep the ID, drop the name.
+    # OPID/OPERATOR is one-to-one. AIRPORT_ID maps to at most 2 names per ID
+    # (spelling variants), so the ID is the safer key.
+    "AIRPORT": "duplicate of AIRPORT_ID (only 2 IDs have name variants, e.g. ARPT vs AIRPORT)",
+    "OPERATOR": "duplicate of OPID (one-to-one)",
+
+    # Species ID/name pair: keep the readable name, drop the code.
+    # 974 IDs vs 975 names (one ID has a name variant), so the pair is effectively one-to-one.
+    # Note: SPECIES itself is ~38% "Unknown bird..." labels, so add a species_unknown
+    # flag during preprocessing instead of treating it as fully informative.
+    "SPECIES_ID": "duplicate of SPECIES (974 IDs vs 975 names; one ID has a name variant)",
+}
 # Borderline: dropped by default, test adding back as a sensitivity check
 BORDERLINE_PREFIXES = ["STR_"]
 BORDERLINE = ["NUM_STRUCK", "NUM_SEEN"]
@@ -111,6 +138,8 @@ def audit_table(columns) -> pd.DataFrame:
             rows.append((c, "drop", "leakage: " + LEAKAGE_PREFIXES[p]))
         elif c in TARGET_SOURCES:
             rows.append((c, "drop", "target source"))
+        elif c in REDUNDANT:
+            rows.append((c, "drop", "redundant: " + REDUNDANT[c]))
         elif c in ID_TEXT:
             rows.append((c, "drop", "identifier / free text / admin"))
         elif c in BORDERLINE or any(c.startswith(p) for p in BORDERLINE_PREFIXES):
