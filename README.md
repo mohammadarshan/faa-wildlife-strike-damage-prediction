@@ -13,7 +13,6 @@ Download the file and place it in `data/raw/`. Raw data is not committed to this
 
 ## Structure
 - `data/`: raw and processed data (ignored by git)
-- `notebooks/`: numbered analysis notebooks (01_..., 02_...)
 - `src/`: reusable code (loading, preprocessing, models)
 - `reports/`: report drafts and figures
 
