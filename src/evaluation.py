@@ -105,7 +105,7 @@ def plot_pr_curves(
     for label, (y_true, y_prob) in curves.items():
         precision, recall, _ = precision_recall_curve(y_true, y_prob)
         ap = average_precision_score(y_true, y_prob)
-        ax.plot(recall, precision, linewidth=2.0, label=f"{label} (PR-AUC={ap:.4f})")
+        ax.step(recall, precision, where="post", linewidth=2.0, label=f"{label} (PR-AUC={ap:.4f})")
     ax.axhline(
         base_rate,
         color="gray",
@@ -137,7 +137,7 @@ def plot_calibration_curves(
     fig, ax = plt.subplots(figsize=(7.5, 5.5))
     ax.plot([0, 1], [0, 1], color="gray", linestyle="--", linewidth=1.2, label="Perfect calibration")
     for label, (y_true, y_prob) in curves.items():
-        prob_true, prob_pred = calibration_curve(y_true, y_prob, n_bins=n_bins, strategy="quantile")
+        prob_true, prob_pred = calibration_curve(y_true, y_prob, n_bins=n_bins, strategy="uniform")
         brier = brier_score_loss(y_true, y_prob)
         ax.plot(prob_pred, prob_true, marker="o", linewidth=1.8, label=f"{label} (Brier={brier:.4f})")
     ax.set_xlabel("Mean predicted damage probability")
