@@ -6,6 +6,7 @@ data/processed/*
 *.xlsx
 *.csv
 *.parquet
+catboost_info/
 
 # Python
 __pycache__/
