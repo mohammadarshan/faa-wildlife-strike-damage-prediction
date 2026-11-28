@@ -1,0 +1,15 @@
+{
+  "logistic_regression": {
+    "C": 0.03,
+    "l1_ratio": 0.5,
+    "val_pr_auc": 0.33223250284974826,
+    "n_configs": 9
+  },
+  "random_forest": {
+    "min_samples_leaf": 10,
+    "max_features": 0.2,
+    "n_estimators": 300,
+    "val_pr_auc": 0.3928519760805212,
+    "n_configs": 6
+  }
+}
